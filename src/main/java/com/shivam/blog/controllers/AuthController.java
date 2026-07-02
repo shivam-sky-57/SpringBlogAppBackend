@@ -2,7 +2,11 @@ package com.shivam.blog.controllers;
 
 import com.shivam.blog.domain.dtos.AuthResponse;
 import com.shivam.blog.domain.dtos.LoginRequest;
+import com.shivam.blog.domain.dtos.RegisterRequest;
+import com.shivam.blog.domain.dtos.UserDto;
+import com.shivam.blog.domain.entities.User;
 import com.shivam.blog.services.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,5 +35,17 @@ public class AuthController {
 
         return ResponseEntity.ok(authResponse);
 
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        User registeredUser = authenticationService.register(registerRequest);
+        UserDto userDto = UserDto.builder()
+                .id(registeredUser.getId())
+                .name(registeredUser.getName())
+                .email(registeredUser.getEmail())
+                .createAt(registeredUser.getCreateAt())
+                .build();
+        return ResponseEntity.ok(userDto);
     }
 }

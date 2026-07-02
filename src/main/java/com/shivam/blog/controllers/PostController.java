@@ -7,7 +7,7 @@ import com.shivam.blog.domain.dtos.PostDto;
 import com.shivam.blog.domain.dtos.UpdatePostRequestDto;
 import com.shivam.blog.domain.entities.Post;
 import com.shivam.blog.domain.entities.User;
-import com.devtiro.blog.mappers.PostMapper;
+import com.shivam.blog.mappers.PostMapper;
 import com.shivam.blog.services.PostService;
 import com.shivam.blog.services.UserService;
 import jakarta.validation.Valid;

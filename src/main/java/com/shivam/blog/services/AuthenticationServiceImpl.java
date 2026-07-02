@@ -10,6 +10,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import com.shivam.blog.domain.dtos.RegisterRequest;
+import com.shivam.blog.domain.entities.User;
+import com.shivam.blog.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -23,6 +27,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -67,5 +73,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private Key getSigningKey() {
         byte[] keyBytes = secretKey.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    @Override
+    public User register(RegisterRequest registerRequest) {
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new IllegalStateException("Email is already registered");
+        }
+        User user = User.builder()
+                .name(registerRequest.getName())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .build();
+        return userRepository.save(user);
     }
 }

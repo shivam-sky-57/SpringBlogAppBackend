@@ -1,4 +1,4 @@
-package com.devtiro.blog.mappers;
+package com.shivam.blog.mappers;
 
 import com.shivam.blog.domain.CreatePostRequest;
 import com.shivam.blog.domain.UpdatePostRequest;

@@ -28,7 +28,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(UserRepository userRepository) {
+    public UserDetailsService userDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         BlogUserDetailsService blogUserDetailsService = new BlogUserDetailsService(userRepository);
 
         String email = "user@test.com";
@@ -36,7 +36,7 @@ public class SecurityConfig {
             User newUser = User.builder()
                     .name("Test User")
                     .email(email)
-                    .password(passwordEncoder().encode("password"))
+                    .password(passwordEncoder.encode("password"))
                     .build();
             return userRepository.save(newUser);
         });
@@ -51,6 +51,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/drafts").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
@@ -65,11 +67,6 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
